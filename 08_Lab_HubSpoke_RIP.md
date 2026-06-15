@@ -2,6 +2,8 @@
 
 ## 🗺 토폴로지
 
+![HubSpoke-Basic-topology](./images/HubSpoke-Basic-topology.png)
+
 ```
        R2 (Hub)
    192.168.2.0/24
