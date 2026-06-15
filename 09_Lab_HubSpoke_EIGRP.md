@@ -1,5 +1,25 @@
 # 9. Lab - Hub&Spoke + EIGRP
 
+## 🗺 토폴로지
+
+
+
+![HubSpoke-Basic-topology](./images/HubSpoke-Basic-topology.png)
+
+```
+       R2 (Hub)
+   192.168.2.0/24
+        |
+        | s1/0.123 multipoint
+        | 192.168.123.2/24
+        |
+      [FR-SW]
+       /     \
+   R1         R3  (Spoke)
+192.168.1.0   192.168.3.0
+192.168.123.1 192.168.123.3
+```
+
 ## 📌 조건
 - AS = `100`, `no auto-summary`
 - 각 Router의 FastEthernet 0/1에 `192.168.x.x/24` 할당
