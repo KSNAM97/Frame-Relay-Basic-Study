@@ -1,3 +1,64 @@
+# 📖 보충 설명: EIGRP over Frame-Relay Hub & Spoke
+
+EIGRP는 **Advanced Distance Vector** 프로토콜로, RIP보다 정교하지만 **NBMA 이슈는 동일**합니다.  
+다만 EIGRP 특유의 추가 고려사항이 있습니다.
+
+---
+
+## ⚠️ EIGRP 특유의 NBMA 이슈
+
+```
+1. Split-Horizon (EIGRP용 별도 명령)
+   → no ip split-horizon eigrp <AS>
+
+2. Bandwidth 기반 메트릭 계산 왜곡
+   → Multipoint 인터페이스의 bandwidth가 모든 PVC에 공유됨
+   → bandwidth 명령으로 PVC당 적정값 설정 권장
+
+3. Pacing (대역폭의 50% 제한)
+   → 잘못된 bandwidth 설정 시 EIGRP 패킷 자체가 drop될 수 있음
+```
+
+---
+
+## 🛠️ 핵심 설정
+
+```cisco
+interface Serial0/0.1 multipoint
+ ip address 10.1.1.1 255.255.255.0
+ no ip split-horizon eigrp 100      ! ← 핵심
+ bandwidth 256                       ! PVC당 대역폭 명시
+ frame-relay map ip 10.1.1.2 102 broadcast
+ frame-relay map ip 10.1.1.3 103 broadcast
+!
+router eigrp 100
+ no auto-summary
+ network 10.0.0.0
+```
+
+---
+
+## 🎯 학습 포인트
+
+| 항목 | 설명 |
+|------|------|
+| `no ip split-horizon eigrp 100` | EIGRP는 IP용 명령과 별개 명령 필요 |
+| `bandwidth` | 메트릭 + Pacing 계산에 사용 |
+| `eigrp stub` | Spoke를 stub으로 지정해 SIA(Stuck-In-Active) 예방 |
+
+---
+
+## 🔍 검증
+
+```cisco
+show ip eigrp neighbors         ! 인접 형성 확인
+show ip eigrp topology          ! Successor / FS 확인
+show ip route eigrp             ! 학습 라우팅 확인
+```
+
+---
+
+
 # 9. Lab - Hub&Spoke + EIGRP
 
 ## 🗺 토폴로지
