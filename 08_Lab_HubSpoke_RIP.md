@@ -1,3 +1,62 @@
+# 📖 보충 설명: RIPv2 over Frame-Relay Hub & Spoke
+
+RIPv2는 **Distance Vector** 프로토콜이며, **Split-Horizon이 기본 활성화**되어 있습니다.  
+NBMA 환경에서는 이 두 가지 특성이 모두 발목을 잡습니다.
+
+---
+
+## ⚠️ 주요 이슈
+
+```
+[Split-Horizon 문제 시나리오]
+
+  Spoke1 → Hub : "10.1.1.0/24 광고"
+  Hub    →  ?  : Spoke2에게 이 광고를 못 보냄 (같은 I/F로 들어왔으니까)
+
+  결과: Spoke1 ↔ Spoke2 라우팅 불가
+```
+
+---
+
+## 🛠️ 해결 방법
+
+```cisco
+interface Serial0/0.1 multipoint
+ no ip split-horizon          ! ← 핵심
+ ip address 10.1.1.1 255.255.255.0
+ frame-relay map ip 10.1.1.2 102 broadcast
+ frame-relay map ip 10.1.1.3 103 broadcast
+!
+router rip
+ version 2
+ no auto-summary
+ network 10.0.0.0
+```
+
+---
+
+## 🎯 학습 포인트
+
+| 항목 | 설명 |
+|------|------|
+| `broadcast` 키워드 | Multicast `224.0.0.9` 전달용 |
+| `no ip split-horizon` | Spoke 간 라우팅 광고 가능하게 |
+| `no auto-summary` | Classless 동작 강제 |
+| `version 2` | Subnet mask 정보 전달 |
+
+---
+
+## 🔍 검증
+
+```cisco
+show ip route rip               ! Spoke가 다른 Spoke 망 학습했는지
+show ip protocols               ! split-horizon 상태 확인
+debug ip rip                    ! 광고 송수신 확인
+```
+
+---
+
+
 # 8. Lab - Hub&Spoke + RIPv2
 
 ## 🗺 토폴로지
