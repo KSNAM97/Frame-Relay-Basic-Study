@@ -1,3 +1,46 @@
+# 📖 보충 설명: 종합 실습의 의미
+
+지금까지 익힌 **Multipoint + Point-to-Point 혼합 구성**을 실제 토폴로지에 적용하는 단계입니다.  
+실무에서 자주 마주치는 **하이브리드 시나리오**를 다룹니다.
+
+```
+              [R2 Hub]
+       Multipoint S0/0.1
+       ┌──────────┼──────────┐
+      R3         R4         R5     ← Multipoint 그룹
+       │
+       │  P2P 별도 링크
+       │
+      R6                            ← P2P 연결
+```
+
+---
+
+## 🎯 학습 포인트
+
+| 항목 | 설명 |
+|------|------|
+| **혼합 설계** | Hub에 Multipoint + P2P 서브인터페이스 동시 운용 |
+| **서브넷 설계** | Multipoint 그룹은 같은 서브넷, P2P는 별도 서브넷 |
+| **트러블슈팅** | 각 모드별로 다른 검증 방식 적용 |
+| **실무 감각** | 노드별 특성에 맞춰 모드를 다르게 적용하는 사고 |
+
+---
+
+## 📌 설계 시 체크리스트
+
+```text
+□ DLCI 번호 충돌 없는지
+□ Multipoint 그룹의 frame-relay map에 broadcast 키워드 누락 없는지
+□ P2P 서브인터페이스는 frame-relay interface-dlci 사용 확인
+□ 라우팅 프로토콜의 split-horizon 처리 확인
+□ OSPF network type 일치 여부 (양쪽 라우터)
+□ show frame-relay pvc 상태 ACTIVE 확인
+```
+
+---
+
+
 # 6. Lab - Frame-Relay 종합 실습
 
 > **Multipoint + Point-to-Point 혼합 구성**  
