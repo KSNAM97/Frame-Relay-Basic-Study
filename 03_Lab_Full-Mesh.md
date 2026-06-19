@@ -1,3 +1,58 @@
+# 📖 보충 설명: Full-Mesh Lab의 목적
+
+이 실습은 **물리 인터페이스에 여러 DLCI를 직접 매핑**하여 모든 라우터가 서로 직접 통신하는 **Full-Mesh** 구조를 만듭니다.
+
+```
+        R1 ───── R2
+        │ ╲    ╱ │
+        │  ╲  ╱  │
+        │   ╳    │      ← 모든 노드가 서로 PVC로 직결
+        │  ╱  ╲  │
+        │ ╱    ╲ │
+        R4 ───── R3
+```
+
+---
+
+## 🎯 실습 목표
+
+| 학습 포인트 | 설명 |
+|-------------|------|
+| **frame-relay map** | DLCI ↔ 상대 IP 수동 매핑 방식 이해 |
+| **Inverse-ARP** | 자동 DLCI ↔ IP 매핑 동작 확인 |
+| **NBMA 특성** | 같은 서브넷에 여러 노드, Broadcast 미지원 |
+| **VC 수 계산** | N×(N-1)/2 → 노드 증가 시 PVC 폭증 체감 |
+
+---
+
+## ⚙️ 핵심 명령어 미리보기
+
+```cisco
+interface Serial0/0
+ encapsulation frame-relay
+ ip address 10.1.1.1 255.255.255.0
+ frame-relay map ip 10.1.1.2 102 broadcast
+ frame-relay map ip 10.1.1.3 103 broadcast
+ frame-relay map ip 10.1.1.4 104 broadcast
+ no frame-relay inverse-arp     ! 수동 매핑 시 권장
+```
+
+---
+
+## 🔍 확인 명령어
+
+```cisco
+show frame-relay pvc            ! PVC 상태 (ACTIVE/INACTIVE/DELETED)
+show frame-relay map            ! DLCI ↔ IP 매핑 테이블
+show frame-relay lmi            ! LMI 상태 카운터
+ping 10.1.1.2                   ! 연결성 검증
+```
+
+> 💡 `broadcast` 키워드가 없으면 라우팅 프로토콜의 Hello/Update가 전달되지 않습니다.
+
+---
+
+
 # 3. Lab - Frame-Relay Full-Mesh
 
 > **하나의 Interface를 사용하여 동일 네트워크상으로 여러대의 장비를 연결하는 기능 (NBMA)**  
