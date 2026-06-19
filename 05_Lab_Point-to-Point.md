@@ -1,3 +1,64 @@
+# 📖 보충 설명: Point-to-Point Sub-Interface Lab
+
+이 실습은 **각 DLCI마다 별도의 P2P 서브인터페이스**를 생성하여 NBMA의 단점을 회피하는 가장 깔끔한 구성 방식입니다.
+
+```
+        R1 (Hub)
+   ┌──────┼──────┐
+ S0/0.12 S0/0.13 S0/0.14
+  P2P    P2P    P2P
+ 10.1.12  10.1.13  10.1.14
+   │      │      │
+   R2    R3    R4
+   (각 링크별 별도 서브넷)
+```
+
+---
+
+## 🎯 실습 목표
+
+| 학습 포인트 | 설명 |
+|-------------|------|
+| **P2P 서브인터페이스** | DLCI 1개 = 서브넷 1개 = 상대 1개 |
+| **Split-Horizon 우회** | 각 서브인터페이스가 별개 인터페이스로 인식됨 |
+| **OSPF 단순화** | 자동으로 point-to-point 타입 → DR/BDR 없음 |
+| **운영 편의성** | NBMA 이슈 없음, 트러블슈팅 쉬움 |
+
+---
+
+## 💡 Multipoint vs P2P 선택 기준
+
+| 기준 | Multipoint | Point-to-Point |
+|------|------------|----------------|
+| IP 주소 절약 | ⭕ (같은 서브넷) | ❌ (서브넷 다수 필요) |
+| NBMA 이슈 | ⚠️ 발생 | ✅ 없음 |
+| 운영 편의성 | ❌ | ⭕ |
+| **실무 추천** | 특수한 경우만 | **대부분의 경우 권장** |
+
+---
+
+## ⚙️ 핵심 설정
+
+```cisco
+interface Serial0/0
+ encapsulation frame-relay
+ no ip address
+ no shutdown
+!
+interface Serial0/0.12 point-to-point
+ ip address 10.1.12.1 255.255.255.0
+ frame-relay interface-dlci 102
+!
+interface Serial0/0.13 point-to-point
+ ip address 10.1.13.1 255.255.255.0
+ frame-relay interface-dlci 103
+```
+
+> 💡 P2P 서브인터페이스에서는 `frame-relay map`이 아닌 `frame-relay interface-dlci`를 사용합니다.
+
+---
+
+
 # 5. Lab - Frame-Relay Point-to-Point
 
 > Point-to-point로 만들어진 Interface들은 서로 다른 네트워크로 동작을 실시하게 된다.
