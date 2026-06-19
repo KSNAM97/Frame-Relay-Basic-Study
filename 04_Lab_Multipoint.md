@@ -1,3 +1,60 @@
+# 📖 보충 설명: Multipoint Sub-Interface Lab
+
+이 실습은 **하나의 서브인터페이스에 여러 DLCI를 매핑**하여 Hub가 여러 Spoke와 통신하는 **Multipoint(NBMA)** 구조를 구성합니다.
+
+```
+                R1 (Hub)
+          S0/0.1 multipoint
+          10.1.1.1/24
+            /    |    \
+          DLCI  DLCI  DLCI
+          102   103   104
+           │     │     │
+          R2    R3    R4
+       (모두 10.1.1.0/24 동일 서브넷)
+```
+
+---
+
+## 🎯 실습 목표
+
+| 학습 포인트 | 설명 |
+|-------------|------|
+| **Multipoint 서브인터페이스** | 물리 I/F는 그대로, 서브인터페이스로 NBMA 구현 |
+| **frame-relay map ... broadcast** | NBMA에서 라우팅 광고 전달 |
+| **Split-Horizon 이슈** | 같은 인터페이스로 들어온 광고는 같은 인터페이스로 못 나감 |
+| **NBMA의 한계** | Spoke 간 직접 통신 시 Hub 경유 필요 |
+
+---
+
+## ⚠️ 주의해야 할 동작
+
+```text
+1. Hub에서 Spoke A가 보낸 라우팅 광고를 Spoke B로 못 보내는 문제
+   → no ip split-horizon (RIP/EIGRP)
+
+2. OSPF는 기본 network type이 non-broadcast
+   → neighbor 명령으로 수동 지정 필요
+   → 또는 point-to-multipoint로 변경 권장
+
+3. broadcast 키워드 빠뜨리면 라우팅 프로토콜 동작 안 함
+   → show frame-relay map에서 "broadcast" 표기 확인
+```
+
+---
+
+## 🔍 검증 흐름
+
+```cisco
+show frame-relay map            ! broadcast 플래그 확인
+show ip route                   ! 라우팅 학습 확인
+show ip ospf interface          ! Network type 확인
+debug ip ospf adj               ! 인접 형성 디버깅
+```
+
+---
+
+
 # 4. Lab - Frame-Relay Multipoint
 
 > Sub-Interface Multipoint 사용  
